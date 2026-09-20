@@ -4,492 +4,826 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
+<link rel="manifest" href="./manifest.webmanifest">
 <title>Mahdi Planner</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;background:#f3f4f6;color:#111827}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;background:#f4f6f8;color:#111827}
 body.dark{background:#111827;color:#f9fafb}
-.app{max-width:720px;margin:auto;padding:16px 14px 40px}
-h1{font-size:25px;margin:8px 0 4px}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0}
+.app{max-width:760px;margin:auto;padding:16px 14px 40px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+h1{font-size:24px;margin:0}
 h2{font-size:18px;margin:0 0 12px}
-p{margin:4px 0}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
-.card{background:#fff;border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 4px 18px #0000000d}
-.dark .card{background:#1f2937}
-.date{display:flex;gap:8px;align-items:center}
-button{border:0;border-radius:12px;padding:10px 13px;background:#111827;color:#fff;font:inherit}
-.dark button{background:#374151}
-button.secondary{background:#e5e7eb;color:#111827}
-.dark button.secondary{background:#374151;color:#fff}
-button.danger{background:#dc2626}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.stat{background:#f9fafb;border-radius:14px;padding:12px;text-align:center}
+h3{font-size:15px;margin:0 0 8px}
+.card{background:white;border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 3px 14px #0000000b}
+.dark .card{background:#1f2937;box-shadow:none}
+.topBtns{display:flex;gap:8px}
+.iconBtn{background:#e5e7eb;border-radius:12px;padding:9px 12px}
+.dark .iconBtn{background:#374151;color:white}
+.dayNav{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.navBtn{background:#111827;color:white;border-radius:12px;padding:10px 15px}
+.dark .navBtn{background:#f3f4f6;color:#111827}
+.dateBox{text-align:center;flex:1}
+.dateBox b{display:block;font-size:18px}
+.dateBox small{opacity:.65}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:#f3f4f6;border-radius:14px;padding:12px;text-align:center}
 .dark .stat{background:#374151}
-.stat b{display:block;font-size:22px;margin-top:4px}
+.stat b{display:block;font-size:21px;margin-top:4px}
 .activity{padding:13px 0;border-bottom:1px solid #e5e7eb}
 .dark .activity{border-color:#374151}
 .activity:last-child{border-bottom:0}
-.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.name{font-weight:700}
-.meta{font-size:12px;color:#6b7280;margin-top:3px}
-.dark .meta{color:#9ca3af}
-.score{font-size:20px;font-weight:800;min-width:55px;text-align:left}
-input[type=range]{width:100%;margin:13px 0 0}
-.sliderline{display:flex;align-items:center;gap:10px}
-.sliderline input{flex:1}
-.sliderValue{font-size:18px;font-weight:800;min-width:48px;text-align:center}
-.donebtn{width:100%;margin-top:10px;font-size:16px}
-.done{background:#16a34a!important}
-.notdone{background:#6b7280!important}
-.progress{height:12px;background:#e5e7eb;border-radius:20px;overflow:hidden;margin-top:10px}
-.progress i{display:block;height:100%;background:#111827;border-radius:20px}
-.dark .progress{background:#374151}
-.chart{display:flex;align-items:end;gap:5px;height:150px;margin-top:15px}
-.barwrap{flex:1;height:100%;display:flex;flex-direction:column;justify-content:end;align-items:center}
-.bar{width:100%;max-width:25px;background:#111827;border-radius:6px 6px 2px 2px;min-height:2px}
-.dark .bar{background:#f9fafb}
-.barlabel{font-size:9px;margin-top:4px;color:#6b7280}
-.fieldrow{display:grid;grid-template-columns:1fr 75px 88px 40px;gap:6px;align-items:center;margin:8px 0}
-.fieldrow input,.fieldrow select{width:100%;padding:8px;border:1px solid #d1d5db;border-radius:9px;background:#fff;font:inherit}
-.dark .fieldrow input,.dark .fieldrow select{background:#374151;color:#fff;border-color:#4b5563}
-.small{font-size:12px;color:#6b7280}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-.hidden{display:none}
-footer{text-align:center;color:#6b7280;font-size:12px;margin-top:20px}
+.activityHead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.activityName{font-weight:700}
+.badge{font-size:12px;background:#eef2ff;padding:4px 8px;border-radius:10px}
+.dark .badge{background:#374151}
+.weight{font-size:12px;opacity:.6}
+.rangeRow{display:flex;align-items:center;gap:10px;margin-top:12px}
+input[type=range]{width:100%}
+.sliderValue{min-width:48px;text-align:center;font-weight:700}
+.doneBtn{width:100%;margin-top:10px;padding:11px;border-radius:12px;background:#e5e7eb}
+.doneBtn.done{background:#16a34a;color:white}
+.applyBtn{width:100%;padding:14px;border-radius:14px;background:#2563eb;color:white;font-weight:800;font-size:16px;margin-top:15px}
+.pendingText{text-align:center;font-size:13px;color:#2563eb;margin-top:8px;display:none}
+.progress{height:10px;background:#e5e7eb;border-radius:20px;overflow:hidden}
+.progress>div{height:100%;background:#2563eb;border-radius:20px}
+.chart{height:170px;display:flex;align-items:flex-end;gap:5px;padding-top:12px}
+.barWrap{height:100%;flex:1;display:flex;align-items:flex-end;justify-content:center}
+.bar{width:100%;max-width:28px;background:#2563eb;border-radius:7px 7px 2px 2px;min-height:3px}
+.chartLabel{font-size:9px;text-align:center;opacity:.55;margin-top:4px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0}
+.primary{background:#2563eb;color:white;border-radius:12px;padding:10px 14px}
+.danger{background:#dc2626;color:white;border-radius:12px;padding:10px 14px}
+.secondary{background:#e5e7eb;border-radius:12px;padding:10px 14px}
+.dark .secondary{background:#374151;color:white}
+.fieldBox{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin:8px 0}
+.dark .fieldBox{border-color:#374151}
+.fieldBox input,.fieldBox select{width:100%;padding:10px;border-radius:10px;border:1px solid #d1d5db;background:white}
+.dark .fieldBox input,.dark .fieldBox select{background:#111827;color:white;border-color:#4b5563}
+.actions{display:flex;gap:8px;margin-top:8px}
+.actions button{flex:1}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:8px;border-bottom:1px solid #e5e7eb;text-align:center}
+.dark td,.dark th{border-color:#374151}
+.good{color:#16a34a}
+.bad{color:#dc2626}
+.muted{opacity:.6}
+input[type=file]{display:none}
+.fileBtn{display:block;text-align:center;background:#e5e7eb;padding:11px;border-radius:12px}
+.dark .fileBtn{background:#374151}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.calHead,.calDay{text-align:center;padding:7px;font-size:12px}
+.calDay{border-radius:9px;background:#f3f4f6;min-height:40px}
+.dark .calDay{background:#374151}
+.calDay.today{outline:2px solid #2563eb}
+.calDay.empty{background:transparent}
 </style>
 </head>
 
 <body>
 <div class="app">
 
-<div class="top">
-<div>
-<h1>📅 Mahdi Planner</h1>
-<p class="small">برنامه‌ریزی و پیگیری روزانه</p>
-</div>
-<button class="secondary" onclick="toggleTheme()">🌓</button>
-</div>
-
-<div class="card">
-<div class="date">
-<button onclick="changeDay(-1)">‹</button>
-<div style="flex:1;text-align:center">
-<b id="dateTitle"></b>
-<div class="small" id="gregDate"></div>
-</div>
-<button onclick="changeDay(1)">›</button>
-</div>
+<div class="header">
+  <div>
+    <h1>📋 Mahdi Planner</h1>
+    <div class="muted">برنامه‌ریزی و پیگیری روزانه</div>
+  </div>
+  <div class="topBtns">
+    <button class="iconBtn" onclick="toggleTheme()">🌙</button>
+  </div>
 </div>
 
 <div class="card">
-<h2>📊 عملکرد امروز</h2>
-<div class="grid">
-<div class="stat">امتیاز<b id="todayScore">0%</b></div>
-<div class="stat">تکمیل<b id="todayDone">0%</b></div>
-<div class="stat">رکورد فعلی<b id="streak">0 روز</b></div>
-<div class="stat">فعالیت‌ها<b id="fieldCount">0</b></div>
-</div>
-<div class="progress"><i id="progress"></i></div>
-</div>
-
-<div class="card">
-<h2>📝 فعالیت‌های امروز</h2>
-<div id="activities"></div>
+  <div class="dayNav">
+    <button class="navBtn" onclick="changeDay(-1)">‹</button>
+    <div class="dateBox">
+      <b id="dateTitle"></b>
+      <small id="dateSub"></small>
+    </div>
+    <button class="navBtn" onclick="changeDay(1)">›</button>
+  </div>
 </div>
 
 <div class="card">
-<h2>📈 روند ۱۴ روز اخیر</h2>
-<div id="chart" class="chart"></div>
+  <h2>📊 وضعیت امروز</h2>
+  <div class="stats">
+    <div class="stat">
+      امتیاز
+      <b id="scoreText">0%</b>
+    </div>
+    <div class="stat">
+      انجام‌شده
+      <b id="doneText">0</b>
+    </div>
+    <div class="stat">
+      رکورد
+      <b id="streakText">0 🔥</b>
+    </div>
+  </div>
+  <div style="margin-top:14px" class="progress">
+    <div id="progressBar" style="width:0%"></div>
+  </div>
 </div>
 
 <div class="card">
-<h2>📊 مقایسه عملکرد</h2>
-<div class="grid">
-<div class="stat">۷ روز اخیر<b id="weekAvg">0%</b></div>
-<div class="stat">۷ روز قبل<b id="prevWeek">0%</b></div>
-<div class="stat">۳۰ روز اخیر<b id="monthAvg">0%</b></div>
-<div class="stat">۳۰ روز قبل<b id="prevMonth">0%</b></div>
-</div>
+  <h2>📝 فعالیت‌های امروز</h2>
+  <div id="activities"></div>
+
+  <button class="applyBtn" onclick="applyChanges()">
+    💾 اعمال تغییرات
+  </button>
+
+  <div id="pendingText" class="pendingText">
+    تغییرات هنوز ذخیره نشده است
+  </div>
 </div>
 
 <div class="card">
-<h2>🏆 نقاط قوت و ضعف</h2>
-<div id="insights"></div>
+  <h2>📈 عملکرد ۱۴ روز اخیر</h2>
+  <div id="chart" class="chart"></div>
 </div>
 
 <div class="card">
-<h2>⚙️ تنظیم فعالیت‌ها</h2>
-<p class="small">برای هر فعالیت نوع و وزن را مشخص کن.</p>
-<div id="settings"></div>
+  <h2>📅 مقایسه عملکرد</h2>
+  <div id="comparisons"></div>
 </div>
 
 <div class="card">
-<h2>💾 پشتیبان‌گیری</h2>
-<div class="actions">
-<button onclick="backup()">⬇️ خروجی اطلاعات</button>
-<button class="secondary" onclick="document.getElementById('importFile').click()">⬆️ ورود اطلاعات</button>
-<input id="importFile" type="file" accept=".json" class="hidden" onchange="restore(event)">
-</div>
+  <h2>💡 تحلیل عملکرد</h2>
+  <div id="insights"></div>
 </div>
 
-<footer>Mahdi Planner — اطلاعات روی همین دستگاه ذخیره می‌شود.</footer>
+<div class="card">
+  <h2>🗓 تقویم</h2>
+  <div id="calendar"></div>
+</div>
+
+<div class="card">
+  <h2>⚙️ تنظیمات فعالیت‌ها</h2>
+  <div id="fieldsSettings"></div>
+  <button class="primary" onclick="addField()">➕ افزودن فعالیت</button>
+</div>
+
+<div class="card">
+  <h2>💾 پشتیبان‌گیری</h2>
+  <div class="row">
+    <button class="primary" onclick="backup()">دانلود پشتیبان</button>
+    <label class="fileBtn">
+      ورود پشتیبان
+      <input type="file" accept=".json" onchange="restore(event)">
+    </label>
+  </div>
+  <button class="danger" style="width:100%;margin-top:10px" onclick="resetAll()">
+    حذف همه اطلاعات
+  </button>
+</div>
+
 </div>
 
 <script>
 const KEY="mahdi_planner_final";
 
 const defaults=[
-{id:1,name:"ورزش",weight:15,type:"score"},
-{id:2,name:"مطالعه",weight:15,type:"score"},
-{id:3,name:"کار اصلی",weight:30,type:"score"},
-{id:4,name:"زبان",weight:10,type:"score"},
-{id:5,name:"خواب",weight:15,type:"score"},
-{id:6,name:"عادت شخصی",weight:15,type:"score"}
+  ["ورزش",15,"score"],
+  ["مطالعه",15,"score"],
+  ["کار اصلی",30,"score"],
+  ["زبان",10,"score"],
+  ["خواب",15,"score"],
+  ["عادت شخصی",15,"done"]
 ];
 
-let S=JSON.parse(localStorage.getItem(KEY)||"null")||{
-fields:defaults,
-days:{},
-dark:false
-};
+let S=JSON.parse(localStorage.getItem(KEY)||"null");
 
-S.fields.forEach(f=>{if(!f.type)f.type="score"});
-
-let current=new Date();
-
-function save(){
-localStorage.setItem(KEY,JSON.stringify(S));
+if(!S){
+  S={
+    fields:defaults.map((x,i)=>({
+      id:"f"+Date.now()+i,
+      name:x[0],
+      weight:x[1],
+      type:x[2]
+    })),
+    days:{},
+    dark:false
+  };
 }
 
-function key(d){
-let y=d.getFullYear();
-let m=String(d.getMonth()+1).padStart(2,"0");
-let day=String(d.getDate()).padStart(2,"0");
-return y+"-"+m+"-"+day;
+S.fields.forEach(f=>{
+  if(!f.type) f.type="score";
+});
+
+let current=new Date();
+let pending={};
+
+function save(){
+  localStorage.setItem(KEY,JSON.stringify(S));
+}
+
+function key(d=current){
+  return d.toISOString().slice(0,10);
 }
 
 function dayData(d=current){
-let k=key(d);
-if(!S.days[k])S.days[k]={};
-return S.days[k];
+  const k=key(d);
+  if(!S.days[k]) S.days[k]={};
+  return S.days[k];
 }
 
 function val(f,d=current){
-let x=dayData(d)[f.id];
-return typeof x==="number"?x:0;
+  const x=dayData(d)[f.id];
+  return x==null ? 0 : Number(x);
 }
 
-function setVal(id,v){
-dayData()[id]=Math.max(0,Math.min(100,Number(v)));
-save();
-render();
+function editVal(f){
+  if(Object.prototype.hasOwnProperty.call(pending,f.id)){
+    return Number(pending[f.id]);
+  }
+  return val(f);
 }
 
 function score(d=current){
-let total=0,weight=0;
-S.fields.forEach(f=>{
-let w=Number(f.weight)||0;
-total+=val(f,d)*w;
-weight+=w;
-});
-return weight?Math.round(total/weight):0;
+  let total=0;
+  let weight=0;
+
+  S.fields.forEach(f=>{
+    total+=val(f,d)*Number(f.weight||0);
+    weight+=Number(f.weight||0);
+  });
+
+  return weight ? Math.round(total/weight) : 0;
 }
 
-function avg(n,start){
-let a=[];
-for(let i=start;i<start+n;i++){
-let d=new Date();
-d.setDate(d.getDate()-i);
-a.push(score(d));
-}
-return a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):0;
-}
+function previewScore(){
+  let total=0;
+  let weight=0;
 
-function jalali(gDate){
-let gy=gDate.getFullYear();
-let gm=gDate.getMonth()+1;
-let gd=gDate.getDate();
-let gdm=[0,31,59,90,120,151,181,212,243,273,304,334];
-let gy2=gm>2?gy+1:gy;
-let days=355666+365*gy+Math.floor((gy2+3)/4)-Math.floor((gy2+99)/100)+Math.floor((gy2+399)/400)+gd+gdm[gm-1];
-let jy=-1595+33*Math.floor(days/12053);
-days%=12053;
-jy+=4*Math.floor(days/1461);
-days%=1461;
-if(days>365){
-jy+=Math.floor((days-1)/365);
-days=(days-1)%365;
-}
-let jm=days<186?1+Math.floor(days/31):7+Math.floor((days-186)/30);
-let jd=1+(days<186?days%31:(days-186)%30);
-return[jy,jm,jd];
+  S.fields.forEach(f=>{
+    total+=editVal(f)*Number(f.weight||0);
+    weight+=Number(f.weight||0);
+  });
+
+  return weight ? Math.round(total/weight) : 0;
 }
 
-function faDate(d){
-let j=jalali(d);
-let months=["فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند"];
-return j[2]+" "+months[j[1]-1]+" "+j[0];
+function doneCount(d=current){
+  return S.fields.filter(f=>val(f,d)>=100).length;
 }
 
-function changeDay(n){
-current.setDate(current.getDate()+n);
-render();
+function jalali(gy,gm,gd){
+  const gdm=[0,31,59,90,120,151,181,212,243,273,304,334];
+  let gy2=gy+(gm>2?1:0);
+  let days=355666+365*gy+Math.floor((gy2+3)/4)-Math.floor((gy2+99)/100)+Math.floor((gy2+399)/400)+gd+gdm[gm-1];
+
+  let jy=-1595+33*Math.floor(days/12053);
+  days%=12053;
+
+  jy+=4*Math.floor(days/1461);
+  days%=1461;
+
+  if(days>365){
+    jy+=Math.floor((days-1)/365);
+    days=(days-1)%365;
+  }
+
+  let jm=days<186?1+Math.floor(days/31):7+Math.floor((days-186)/30);
+  let jd=1+(days<186?days%31:(days-186)%30);
+
+  return [jy,jm,jd];
 }
 
-function toggleDone(id){
-let f=S.fields.find(x=>x.id===id);
-setVal(id,val(f)===100?0:100);
+function jDate(d=current){
+  return jalali(d.getFullYear(),d.getMonth()+1,d.getDate());
 }
 
-function updateSlider(id,value){
-dayData()[id]=Number(value);
-save();
+const months=[
+  "فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور",
+  "مهر","آبان","آذر","دی","بهمن","اسفند"
+];
 
-let el=document.getElementById("value-"+id);
-if(el)el.textContent=Number(value)+"%";
+const weekdays=[
+  "یکشنبه","دوشنبه","سه‌شنبه","چهارشنبه","پنجشنبه","جمعه","شنبه"
+];
 
-let s=score();
-document.getElementById("todayScore").textContent=s+"%";
-document.getElementById("todayDone").textContent=s+"%";
-document.getElementById("progress").style.width=s+"%";
+function dateText(d=current){
+  const j=jDate(d);
+  return `${j[2]} ${months[j[1]-1]} ${j[0]}`;
+}
+
+function renderDate(){
+  const j=jDate(current);
+  document.getElementById("dateTitle").textContent=dateText(current);
+  document.getElementById("dateSub").textContent=
+    weekdays[current.getDay()]+" • "+current.toLocaleDateString("fa-IR");
 }
 
 function renderActivities(){
-let html="";
+  const box=document.getElementById("activities");
 
-S.fields.forEach(f=>{
-let v=val(f);
+  if(!S.fields.length){
+    box.innerHTML='<div class="muted">هنوز فعالیتی اضافه نشده است.</div>';
+    return;
+  }
 
-html+=`
-<div class="activity">
-<div class="row">
-<div>
-<div class="name">${esc(f.name)}</div>
-<div class="meta">وزن: ${f.weight}% · ${f.type==="done"?"انجام شد / انجام نشد":"امتیاز از ۰ تا ۱۰۰"}</div>
-</div>
-</div>
+  box.innerHTML=S.fields.map(f=>{
+    const v=editVal(f);
 
-${
-f.type==="done"
-?
-`<button class="donebtn ${v===100?"done":"notdone"}" onclick="toggleDone(${f.id})">
-${v===100?"✓ انجام شد":"○ انجام نشده"}
-</button>`
-:
-`<div class="sliderline">
-<input type="range" min="0" max="100" value="${v}"
-oninput="updateSlider(${f.id},this.value)">
-<div class="sliderValue" id="value-${f.id}">${v}%</div>
-</div>`
-}
-</div>`;
-});
+    if(f.type==="done"){
+      return `
+      <div class="activity">
+        <div class="activityHead">
+          <div>
+            <div class="activityName">${escapeHtml(f.name)}</div>
+            <span class="weight">وزن ${f.weight}%</span>
+          </div>
+          <span class="badge">انجام شد / نشد</span>
+        </div>
 
-document.getElementById("activities").innerHTML=html;
-}
+        <button
+          class="doneBtn ${v>=100?"done":""}"
+          onclick="toggleDone('${f.id}')">
+          ${v>=100?"✓ انجام شد":"○ انجام نشده"}
+        </button>
+      </div>`;
+    }
 
-function renderSettings(){
-let html="";
+    return `
+    <div class="activity">
+      <div class="activityHead">
+        <div>
+          <div class="activityName">${escapeHtml(f.name)}</div>
+          <span class="weight">وزن ${f.weight}%</span>
+        </div>
+        <span class="badge">امتیاز از ۱۰۰</span>
+      </div>
 
-S.fields.forEach(f=>{
-html+=`
-<div class="fieldrow">
-<input id="n${f.id}" value="${esc(f.name)}">
-<input id="w${f.id}" type="number" min="0" max="100" value="${f.weight}">
-<select id="t${f.id}">
-<option value="score" ${f.type==="score"?"selected":""}>امتیازی</option>
-<option value="done" ${f.type==="done"?"selected":""}>انجام/عدم</option>
-</select>
-<button class="danger" onclick="removeField(${f.id})">×</button>
-</div>`;
-});
+      <div class="rangeRow">
+        <input
+          id="slider-${f.id}"
+          type="range"
+          min="0"
+          max="100"
+          value="${v}"
+          oninput="updateSlider('${f.id}',this.value)"
+        >
+        <div class="sliderValue" id="value-${f.id}">${v}%</div>
+      </div>
+    </div>`;
+  }).join("");
 
-html+=`
-<div class="actions" style="margin-top:12px">
-<button onclick="addField()">➕ افزودن فعالیت</button>
-<button onclick="saveFields()">💾 ذخیره</button>
-</div>`;
-
-document.getElementById("settings").innerHTML=html;
+  updatePendingStatus();
 }
 
-function saveFields(){
-S.fields.forEach(f=>{
-f.name=document.getElementById("n"+f.id).value||"فعالیت";
-f.weight=Number(document.getElementById("w"+f.id).value)||0;
-f.type=document.getElementById("t"+f.id).value;
-});
-save();
-render();
-alert("تنظیمات ذخیره شد ✅");
+function updateSlider(id,value){
+  pending[id]=Number(value);
+
+  const el=document.getElementById("value-"+id);
+  if(el) el.textContent=Number(value)+"%";
+
+  updatePreview();
+  updatePendingStatus();
 }
 
-function addField(){
-let name=prompt("نام فعالیت را وارد کن:");
-if(!name)return;
+function toggleDone(id){
+  const f=S.fields.find(x=>x.id===id);
+  if(!f) return;
 
-let type=prompt("نوع فعالیت:\n1 = امتیاز از 100\n2 = انجام شد / انجام نشد","1");
-type=type==="2"?"done":"score";
+  const currentValue=editVal(f);
+  pending[id]=currentValue>=100?0:100;
 
-let weight=Number(prompt("وزن فعالیت چند درصد باشد؟","10"));
-if(isNaN(weight))weight=10;
-
-S.fields.push({
-id:Date.now(),
-name:name,
-weight:weight,
-type:type
-});
-
-save();
-render();
+  renderActivities();
+  updatePreview();
+  updatePendingStatus();
 }
 
-function removeField(id){
-if(!confirm("این فعالیت حذف شود؟"))return;
-S.fields=S.fields.filter(f=>f.id!==id);
-save();
-render();
+function updatePreview(){
+  const s=previewScore();
+  document.getElementById("scoreText").textContent=s+"%";
+  document.getElementById("progressBar").style.width=s+"%";
+
+  let done=0;
+  S.fields.forEach(f=>{
+    if(editVal(f)>=100) done++;
+  });
+
+  document.getElementById("doneText").textContent=done;
 }
 
-function renderChart(){
-let c=document.getElementById("chart");
-let arr=[];
+function updatePendingStatus(){
+  const el=document.getElementById("pendingText");
 
-for(let i=13;i>=0;i--){
-let d=new Date();
-d.setDate(d.getDate()-i);
-arr.push({v:score(d),d:d});
+  if(Object.keys(pending).length){
+    el.style.display="block";
+  }else{
+    el.style.display="none";
+  }
 }
 
-c.innerHTML=arr.map(x=>`
-<div class="barwrap">
-<div class="bar" style="height:${Math.max(2,x.v)}%"></div>
-<div class="barlabel">${jalali(x.d)[2]}</div>
-</div>`).join("");
+function applyChanges(showMessage=true){
+  const ids=Object.keys(pending);
+
+  if(!ids.length){
+    if(showMessage) alert("تغییری برای اعمال وجود ندارد.");
+    return;
+  }
+
+  const d=dayData();
+
+  ids.forEach(id=>{
+    d[id]=Number(pending[id]);
+  });
+
+  pending={};
+  save();
+  render();
+
+  if(showMessage){
+    alert("تغییرات با موفقیت اعمال و ذخیره شد ✅");
+  }
 }
 
-function avgField(f){
-let a=[];
-for(let i=0;i<7;i++){
-let d=new Date();
-d.setDate(d.getDate()-i);
-a.push(val(f,d));
-}
-return Math.round(a.reduce((x,y)=>x+y,0)/a.length);
-}
+function changeDay(n){
+  if(Object.keys(pending).length){
+    applyChanges(false);
+  }
 
-function renderInsights(){
-if(!S.fields.length){
-document.getElementById("insights").innerHTML="هنوز فعالیتی وجود ندارد.";
-return;
-}
-
-let a=S.fields.map(f=>({
-name:f.name,
-v:avgField(f)
-})).sort((x,y)=>y.v-x.v);
-
-document.getElementById("insights").innerHTML=
-`<p>💪 بالاترین عملکرد: <b>${esc(a[0].name)}</b> — ${a[0].v}%</p>
-<p>🔧 نیازمند توجه بیشتر: <b>${esc(a[a.length-1].name)}</b> — ${a[a.length-1].v}%</p>`;
+  current.setDate(current.getDate()+n);
+  pending={};
+  render();
 }
 
 function streak(){
-let n=0;
+  let n=0;
+  let d=new Date(current);
 
-for(let i=0;i<365;i++){
-let d=new Date();
-d.setDate(d.getDate()-i);
+  while(true){
+    if(score(d)>=70){
+      n++;
+      d.setDate(d.getDate()-1);
+    }else{
+      break;
+    }
+    if(n>3650) break;
+  }
 
-if(score(d)>=100)n++;
-else break;
+  return n;
 }
 
-return n;
+function renderStats(){
+  updatePreview();
+  document.getElementById("streakText").textContent=streak()+" 🔥";
 }
 
-function toggleTheme(){
-S.dark=!S.dark;
-save();
-applyTheme();
+function renderChart(){
+  const box=document.getElementById("chart");
+  let html="";
+
+  for(let i=13;i>=0;i--){
+    const d=new Date(current);
+    d.setDate(d.getDate()-i);
+
+    const s=score(d);
+    const j=jDate(d);
+
+    html+=`
+      <div class="barWrap">
+        <div style="display:flex;flex-direction:column;align-items:center;width:100%">
+          <div class="bar" style="height:${Math.max(3,s*1.35)}px" title="${s}%"></div>
+          <div class="chartLabel">${j[2]}</div>
+        </div>
+      </div>`;
+  }
+
+  box.innerHTML=html;
 }
 
-function applyTheme(){
-document.body.classList.toggle("dark",!!S.dark);
+function avg(days,offset=0){
+  let sum=0;
+
+  for(let i=offset;i<offset+days;i++){
+    const d=new Date(current);
+    d.setDate(d.getDate()-i);
+    sum+=score(d);
+  }
+
+  return Math.round(sum/days);
+}
+
+function renderComparisons(){
+  const w=avg(7,0);
+  const pw=avg(7,7);
+  const m=avg(30,0);
+  const pm=avg(30,30);
+
+  const wd=w-pw;
+  const md=m-pm;
+
+  document.getElementById("comparisons").innerHTML=`
+    <div class="row">
+      <span>۷ روز اخیر</span>
+      <b>${w}%</b>
+    </div>
+    <div class="row">
+      <span>۷ روز قبل</span>
+      <b>${pw}%</b>
+    </div>
+    <div class="row">
+      <span>تغییر هفتگی</span>
+      <b class="${wd>=0?"good":"bad"}">${wd>=0?"+":""}${wd}%</b>
+    </div>
+    <hr>
+    <div class="row">
+      <span>۳۰ روز اخیر</span>
+      <b>${m}%</b>
+    </div>
+    <div class="row">
+      <span>۳۰ روز قبل</span>
+      <b>${pm}%</b>
+    </div>
+    <div class="row">
+      <span>تغییر ماهانه</span>
+      <b class="${md>=0?"good":"bad"}">${md>=0?"+":""}${md}%</b>
+    </div>`;
+}
+
+function renderInsights(){
+  if(!S.fields.length){
+    document.getElementById("insights").innerHTML="فعالیتی برای تحلیل وجود ندارد.";
+    return;
+  }
+
+  const arr=S.fields.map(f=>({
+    name:f.name,
+    value:scoreField(f)
+  })).sort((a,b)=>b.value-a.value);
+
+  const best=arr[0];
+  const weak=arr[arr.length-1];
+
+  document.getElementById("insights").innerHTML=`
+    <div class="row">
+      <span>💪 نقطه قوت</span>
+      <b>${escapeHtml(best.name)} — ${best.value}%</b>
+    </div>
+    <div class="row">
+      <span>🎯 نیازمند توجه</span>
+      <b>${escapeHtml(weak.name)} — ${weak.value}%</b>
+    </div>`;
+}
+
+function scoreField(f){
+  let total=0;
+  let count=0;
+
+  for(let i=0;i<30;i++){
+    const d=new Date(current);
+    d.setDate(d.getDate()-i);
+
+    total+=val(f,d);
+    count++;
+  }
+
+  return Math.round(total/count);
+}
+
+function renderCalendar(){
+  const j=jDate(current);
+  const jy=j[0];
+  const jm=j[1];
+
+  let html=`
+    <div class="row">
+      <button class="secondary" onclick="calendarMonth(-1)">‹</button>
+      <b>${months[jm-1]} ${jy}</b>
+      <button class="secondary" onclick="calendarMonth(1)">›</button>
+    </div>
+    <div class="calendar">
+      ${["ش","ی","د","س","چ","پ","ج"].map(x=>`<div class="calHead">${x}</div>`).join("")}
+  `;
+
+  const days=jm<=6?31:jm<=11?30:30;
+
+  const first=new Date(current);
+  first.setDate(1);
+
+  let start=(first.getDay()+1)%7;
+
+  for(let i=0;i<start;i++){
+    html+=`<div class="calDay empty"></div>`;
+  }
+
+  for(let d=1;d<=days;d++){
+    const cell=new Date(current);
+    cell.setDate(1);
+    cell.setDate(d);
+
+    const s=score(cell);
+
+    html+=`
+      <div class="calDay ${sameDate(cell,current)?"today":""}" title="${s}%">
+        <b>${d}</b>
+        <div style="font-size:10px;margin-top:4px">${s}%</div>
+      </div>`;
+  }
+
+  html+="</div>";
+
+  document.getElementById("calendar").innerHTML=html;
+}
+
+function sameDate(a,b){
+  return a.toDateString()===b.toDateString();
+}
+
+function calendarMonth(n){
+  if(Object.keys(pending).length) applyChanges(false);
+
+  current.setMonth(current.getMonth()+n);
+  render();
+}
+
+function renderSettings(){
+  const box=document.getElementById("fieldsSettings");
+
+  box.innerHTML=S.fields.map(f=>`
+    <div class="fieldBox">
+      <input id="name-${f.id}" value="${escapeAttr(f.name)}">
+
+      <div style="height:8px"></div>
+
+      <input
+        id="weight-${f.id}"
+        type="number"
+        min="0"
+        max="100"
+        value="${f.weight}"
+        placeholder="وزن">
+
+      <div style="height:8px"></div>
+
+      <select id="type-${f.id}">
+        <option value="score" ${f.type==="score"?"selected":""}>
+          امتیاز از ۱۰۰
+        </option>
+        <option value="done" ${f.type==="done"?"selected":""}>
+          انجام شد / انجام نشد
+        </option>
+      </select>
+
+      <div class="actions">
+        <button class="primary" onclick="saveField('${f.id}')">ذخیره</button>
+        <button class="danger" onclick="removeField('${f.id}')">حذف</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function saveField(id){
+  if(Object.keys(pending).length) applyChanges(false);
+
+  const f=S.fields.find(x=>x.id===id);
+  if(!f) return;
+
+  f.name=document.getElementById("name-"+id).value.trim()||"فعالیت";
+  f.weight=Math.max(0,Number(document.getElementById("weight-"+id).value)||0);
+  f.type=document.getElementById("type-"+id).value;
+
+  save();
+  render();
+  alert("فعالیت ذخیره شد ✅");
+}
+
+function removeField(id){
+  if(!confirm("این فعالیت حذف شود؟")) return;
+
+  if(Object.keys(pending).length) applyChanges(false);
+
+  S.fields=S.fields.filter(f=>f.id!==id);
+
+  Object.values(S.days).forEach(d=>{
+    delete d[id];
+  });
+
+  save();
+  render();
+}
+
+function addField(){
+  if(Object.keys(pending).length) applyChanges(false);
+
+  const name=prompt("نام فعالیت:");
+  if(!name) return;
+
+  const weight=Number(prompt("وزن فعالیت از ۰ تا ۱۰۰:","10"))||0;
+
+  const type=confirm("اگر این فعالیت فقط «انجام شد / انجام نشد» است OK بزنید.\nاگر درصد ۰ تا ۱۰۰ می‌خواهید Cancel بزنید.")
+    ?"done":"score";
+
+  S.fields.push({
+    id:"f"+Date.now(),
+    name:name.trim(),
+    weight:Math.max(0,Math.min(100,weight)),
+    type:type
+  });
+
+  save();
+  render();
 }
 
 function backup(){
-let blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
-let a=document.createElement("a");
-a.href=URL.createObjectURL(blob);
-a.download="mahdi-planner-backup.json";
-a.click();
+  if(Object.keys(pending).length) applyChanges(false);
+
+  const blob=new Blob(
+    [JSON.stringify(S,null,2)],
+    {type:"application/json"}
+  );
+
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="mahdi-planner-backup.json";
+  a.click();
+
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 
-function restore(e){
-let file=e.target.files[0];
-if(!file)return;
+function restore(event){
+  const file=event.target.files[0];
+  if(!file) return;
 
-let r=new FileReader();
+  const reader=new FileReader();
 
-r.onload=function(){
-try{
-let x=JSON.parse(r.result);
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
 
-if(x.fields&&x.days){
-S=x;
-S.fields.forEach(f=>{if(!f.type)f.type="score"});
-save();
-render();
-alert("اطلاعات با موفقیت وارد شد ✅");
-}else{
-alert("فایل معتبر نیست");
+      if(!data.fields || !data.days){
+        throw new Error();
+      }
+
+      S=data;
+
+      S.fields.forEach(f=>{
+        if(!f.type) f.type="score";
+      });
+
+      pending={};
+      save();
+      render();
+
+      alert("پشتیبان با موفقیت وارد شد ✅");
+    }catch(e){
+      alert("فایل پشتیبان معتبر نیست.");
+    }
+  };
+
+  reader.readAsText(file);
 }
-}catch(err){
-alert("فایل معتبر نیست");
-}
-};
 
-r.readAsText(file);
+function resetAll(){
+  if(!confirm("همه اطلاعات حذف شود؟ این کار قابل برگشت نیست.")) return;
+
+  localStorage.removeItem(KEY);
+  location.reload();
 }
 
-function esc(x){
-return String(x).replace(/[&<>"']/g,m=>({
-"&":"&amp;",
-"<":"&lt;",
-">":"&gt;",
-'"':"&quot;",
-"'":"&#039;"
-}[m]));
+function toggleTheme(){
+  S.dark=!S.dark;
+  save();
+  applyTheme();
+}
+
+function applyTheme(){
+  document.body.classList.toggle("dark",!!S.dark);
+}
+
+function escapeHtml(x){
+  return String(x)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function escapeAttr(x){
+  return escapeHtml(x);
 }
 
 function render(){
-applyTheme();
-
-document.getElementById("dateTitle").textContent=faDate(current);
-document.getElementById("gregDate").textContent=current.toLocaleDateString("fa-IR");
-
-let s=score();
-
-document.getElementById("todayScore").textContent=s+"%";
-document.getElementById("todayDone").textContent=s+"%";
-document.getElementById("progress").style.width=s+"%";
-document.getElementById("streak").textContent=streak()+" روز";
-document.getElementById("fieldCount").textContent=S.fields.length;
-
-document.getElementById("weekAvg").textContent=avg(7,0)+"%";
-document.getElementById("prevWeek").textContent=avg(7,7)+"%";
-document.getElementById("monthAvg").textContent=avg(30,0)+"%";
-document.getElementById("prevMonth").textContent=avg(30,30)+"%";
-
-renderActivities();
-renderSettings();
-renderChart();
-renderInsights();
+  applyTheme();
+  renderDate();
+  renderActivities();
+  renderStats();
+  renderChart();
+  renderComparisons();
+  renderInsights();
+  renderCalendar();
+  renderSettings();
 }
 
 render();
 </script>
+
 </body>
 </html>
