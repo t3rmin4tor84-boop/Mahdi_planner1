@@ -14,14 +14,13 @@ h1{font-size:25px;margin:8px 0 4px}
 h2{font-size:18px;margin:0 0 12px}
 p{margin:4px 0}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
-.card{background:white;border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 4px 18px #0000000d}
+.card{background:#fff;border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 4px 18px #0000000d}
 .dark .card{background:#1f2937}
 .date{display:flex;gap:8px;align-items:center}
-button,input,select{font:inherit}
-button{border:0;border-radius:12px;padding:10px 13px;background:#111827;color:white;cursor:pointer}
+button{border:0;border-radius:12px;padding:10px 13px;background:#111827;color:#fff;font:inherit}
 .dark button{background:#374151}
 button.secondary{background:#e5e7eb;color:#111827}
-.dark button.secondary{background:#374151;color:white}
+.dark button.secondary{background:#374151;color:#fff}
 button.danger{background:#dc2626}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .stat{background:#f9fafb;border-radius:14px;padding:12px;text-align:center}
@@ -34,8 +33,11 @@ button.danger{background:#dc2626}
 .name{font-weight:700}
 .meta{font-size:12px;color:#6b7280;margin-top:3px}
 .dark .meta{color:#9ca3af}
-input[type=range]{width:100%;margin-top:12px}
-.score{font-size:18px;font-weight:800}
+.score{font-size:20px;font-weight:800;min-width:55px;text-align:left}
+input[type=range]{width:100%;margin:13px 0 0}
+.sliderline{display:flex;align-items:center;gap:10px}
+.sliderline input{flex:1}
+.sliderValue{font-size:18px;font-weight:800;min-width:48px;text-align:center}
 .donebtn{width:100%;margin-top:10px;font-size:16px}
 .done{background:#16a34a!important}
 .notdone{background:#6b7280!important}
@@ -47,12 +49,11 @@ input[type=range]{width:100%;margin-top:12px}
 .bar{width:100%;max-width:25px;background:#111827;border-radius:6px 6px 2px 2px;min-height:2px}
 .dark .bar{background:#f9fafb}
 .barlabel{font-size:9px;margin-top:4px;color:#6b7280}
-.fieldrow{display:grid;grid-template-columns:1fr 80px 90px 42px;gap:6px;align-items:center;margin:8px 0}
-.fieldrow input,.fieldrow select{width:100%;padding:8px;border:1px solid #d1d5db;border-radius:9px;background:white}
-.dark .fieldrow input,.dark .fieldrow select{background:#374151;color:white;border-color:#4b5563}
+.fieldrow{display:grid;grid-template-columns:1fr 75px 88px 40px;gap:6px;align-items:center;margin:8px 0}
+.fieldrow input,.fieldrow select{width:100%;padding:8px;border:1px solid #d1d5db;border-radius:9px;background:#fff;font:inherit}
+.dark .fieldrow input,.dark .fieldrow select{background:#374151;color:#fff;border-color:#4b5563}
 .small{font-size:12px;color:#6b7280}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
-textarea{width:100%;height:100px}
 .hidden{display:none}
 footer{text-align:center;color:#6b7280;font-size:12px;margin-top:20px}
 </style>
@@ -94,9 +95,6 @@ footer{text-align:center;color:#6b7280;font-size:12px;margin-top:20px}
 <div class="card">
 <h2>📝 فعالیت‌های امروز</h2>
 <div id="activities"></div>
-<div class="actions" style="margin-top:12px">
-<button onclick="completeAll()">✅ همه انجام شد</button>
-</div>
 </div>
 
 <div class="card">
@@ -121,11 +119,8 @@ footer{text-align:center;color:#6b7280;font-size:12px;margin-top:20px}
 
 <div class="card">
 <h2>⚙️ تنظیم فعالیت‌ها</h2>
-<p class="small">برای هر فعالیت مشخص کن امتیازی باشد یا انجام‌شدنی.</p>
+<p class="small">برای هر فعالیت نوع و وزن را مشخص کن.</p>
 <div id="settings"></div>
-<div class="actions" style="margin-top:12px">
-<button onclick="addField()">➕ افزودن فعالیت</button>
-</div>
 </div>
 
 <div class="card">
@@ -143,7 +138,7 @@ footer{text-align:center;color:#6b7280;font-size:12px;margin-top:20px}
 <script>
 const KEY="mahdi_planner_final";
 
-const defaultFields=[
+const defaults=[
 {id:1,name:"ورزش",weight:15,type:"score"},
 {id:2,name:"مطالعه",weight:15,type:"score"},
 {id:3,name:"کار اصلی",weight:30,type:"score"},
@@ -153,14 +148,12 @@ const defaultFields=[
 ];
 
 let S=JSON.parse(localStorage.getItem(KEY)||"null")||{
-fields:defaultFields,
+fields:defaults,
 days:{},
 dark:false
 };
 
-S.fields.forEach(f=>{
-if(!f.type)f.type="score";
-});
+S.fields.forEach(f=>{if(!f.type)f.type="score"});
 
 let current=new Date();
 
@@ -169,7 +162,10 @@ localStorage.setItem(KEY,JSON.stringify(S));
 }
 
 function key(d){
-return d.toISOString().slice(0,10);
+let y=d.getFullYear();
+let m=String(d.getMonth()+1).padStart(2,"0");
+let day=String(d.getDate()).padStart(2,"0");
+return y+"-"+m+"-"+day;
 }
 
 function dayData(d=current){
@@ -192,30 +188,30 @@ render();
 function score(d=current){
 let total=0,weight=0;
 S.fields.forEach(f=>{
-total+=val(f,d)*Number(f.weight||0);
-weight+=Number(f.weight||0);
+let w=Number(f.weight)||0;
+total+=val(f,d)*w;
+weight+=w;
 });
 return weight?Math.round(total/weight):0;
 }
 
-function avg(daysBack,start=0){
-let arr=[];
-for(let i=start;i<start+daysBack;i++){
+function avg(n,start){
+let a=[];
+for(let i=start;i<start+n;i++){
 let d=new Date();
 d.setDate(d.getDate()-i);
-arr.push(score(d));
+a.push(score(d));
 }
-return arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length):0;
+return a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):0;
 }
 
 function jalali(gDate){
 let gy=gDate.getFullYear();
 let gm=gDate.getMonth()+1;
 let gd=gDate.getDate();
-
-let g_d_m=[0,31,59,90,120,151,181,212,243,273,304,334];
+let gdm=[0,31,59,90,120,151,181,212,243,273,304,334];
 let gy2=gm>2?gy+1:gy;
-let days=355666+(365*gy)+(Math.floor((gy2+3)/4))-Math.floor((gy2+99)/100)+Math.floor((gy2+399)/400)+gd+g_d_m[gm-1];
+let days=355666+365*gy+Math.floor((gy2+3)/4)-Math.floor((gy2+99)/100)+Math.floor((gy2+399)/400)+gd+gdm[gm-1];
 let jy=-1595+33*Math.floor(days/12053);
 days%=12053;
 jy+=4*Math.floor(days/1461);
@@ -226,13 +222,13 @@ days=(days-1)%365;
 }
 let jm=days<186?1+Math.floor(days/31):7+Math.floor((days-186)/30);
 let jd=1+(days<186?days%31:(days-186)%30);
-return [jy,jm,jd];
+return[jy,jm,jd];
 }
 
 function faDate(d){
 let j=jalali(d);
 let months=["فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند"];
-return `${j[2]} ${months[j[1]-1]} ${j[0]}`;
+return j[2]+" "+months[j[1]-1]+" "+j[0];
 }
 
 function changeDay(n){
@@ -242,53 +238,78 @@ render();
 
 function toggleDone(id){
 let f=S.fields.find(x=>x.id===id);
-let old=val(f);
-setVal(id,old===100?0:100);
+setVal(id,val(f)===100?0:100);
 }
 
-function completeAll(){
-S.fields.forEach(f=>dayData()[f.id]=100);
+function updateSlider(id,value){
+dayData()[id]=Number(value);
 save();
-render();
+
+let el=document.getElementById("value-"+id);
+if(el)el.textContent=Number(value)+"%";
+
+let s=score();
+document.getElementById("todayScore").textContent=s+"%";
+document.getElementById("todayDone").textContent=s+"%";
+document.getElementById("progress").style.width=s+"%";
 }
 
 function renderActivities(){
 let html="";
+
 S.fields.forEach(f=>{
 let v=val(f);
+
 html+=`
 <div class="activity">
 <div class="row">
 <div>
-<div class="name">${escapeHtml(f.name)}</div>
-<div class="meta">وزن: ${f.weight}% · ${f.type==="done"?"انجام شد / انجام نشد":"امتیاز ۰ تا ۱۰۰"}</div>
+<div class="name">${esc(f.name)}</div>
+<div class="meta">وزن: ${f.weight}% · ${f.type==="done"?"انجام شد / انجام نشد":"امتیاز از ۰ تا ۱۰۰"}</div>
 </div>
-<div class="score">${v}%</div>
 </div>
-${f.type==="done"
-?`<button class="donebtn ${v===100?"done":"notdone"}" onclick="toggleDone(${f.id})">${v===100?"✓ انجام شد":"○ انجام نشده"}</button>`
-:`<input type="range" min="0" max="100" value="${v}" oninput="setVal(${f.id},this.value)">`}
+
+${
+f.type==="done"
+?
+`<button class="donebtn ${v===100?"done":"notdone"}" onclick="toggleDone(${f.id})">
+${v===100?"✓ انجام شد":"○ انجام نشده"}
+</button>`
+:
+`<div class="sliderline">
+<input type="range" min="0" max="100" value="${v}"
+oninput="updateSlider(${f.id},this.value)">
+<div class="sliderValue" id="value-${f.id}">${v}%</div>
+</div>`
+}
 </div>`;
 });
+
 document.getElementById("activities").innerHTML=html;
 }
 
 function renderSettings(){
 let html="";
+
 S.fields.forEach(f=>{
 html+=`
 <div class="fieldrow">
-<input id="n${f.id}" value="${escapeAttr(f.name)}">
+<input id="n${f.id}" value="${esc(f.name)}">
 <input id="w${f.id}" type="number" min="0" max="100" value="${f.weight}">
 <select id="t${f.id}">
 <option value="score" ${f.type==="score"?"selected":""}>امتیازی</option>
 <option value="done" ${f.type==="done"?"selected":""}>انجام/عدم</option>
 </select>
 <button class="danger" onclick="removeField(${f.id})">×</button>
-</div>
-`;
+</div>`;
 });
-html+=`<button style="margin-top:10px" onclick="saveFields()">💾 ذخیره تنظیمات فعالیت‌ها</button>`;
+
+html+=`
+<div class="actions" style="margin-top:12px">
+<button onclick="addField()">➕ افزودن فعالیت</button>
+<button onclick="saveFields()">💾 ذخیره</button>
+</div>`;
+
 document.getElementById("settings").innerHTML=html;
 }
 
@@ -307,14 +328,19 @@ function addField(){
 let name=prompt("نام فعالیت را وارد کن:");
 if(!name)return;
 
-let type=prompt("نوع فعالیت را انتخاب کن:\n1 = امتیاز از 100\n2 = انجام شد / انجام نشد","1");
+let type=prompt("نوع فعالیت:\n1 = امتیاز از 100\n2 = انجام شد / انجام نشد","1");
 type=type==="2"?"done":"score";
 
 let weight=Number(prompt("وزن فعالیت چند درصد باشد؟","10"));
 if(isNaN(weight))weight=10;
 
-let id=Date.now();
-S.fields.push({id,name,weight,type});
+S.fields.push({
+id:Date.now(),
+name:name,
+weight:weight,
+type:type
+});
+
 save();
 render();
 }
@@ -329,11 +355,13 @@ render();
 function renderChart(){
 let c=document.getElementById("chart");
 let arr=[];
+
 for(let i=13;i>=0;i--){
 let d=new Date();
 d.setDate(d.getDate()-i);
-arr.push({v:score(d),d});
+arr.push({v:score(d),d:d});
 }
+
 c.innerHTML=arr.map(x=>`
 <div class="barwrap">
 <div class="bar" style="height:${Math.max(2,x.v)}%"></div>
@@ -341,66 +369,44 @@ c.innerHTML=arr.map(x=>`
 </div>`).join("");
 }
 
-function renderInsights(){
-let list=S.fields.map(f=>({name:f.name,v:avgField(f)}));
-list.sort((a,b)=>b.v-a.v);
+function avgField(f){
+let a=[];
+for(let i=0;i<7;i++){
+let d=new Date();
+d.setDate(d.getDate()-i);
+a.push(val(f,d));
+}
+return Math.round(a.reduce((x,y)=>x+y,0)/a.length);
+}
 
-if(!list.length){
+function renderInsights(){
+if(!S.fields.length){
 document.getElementById("insights").innerHTML="هنوز فعالیتی وجود ندارد.";
 return;
 }
 
-let best=list[0];
-let weak=list[list.length-1];
+let a=S.fields.map(f=>({
+name:f.name,
+v:avgField(f)
+})).sort((x,y)=>y.v-x.v);
 
-document.getElementById("insights").innerHTML=`
-<p>💪 <b>بالاترین عملکرد:</b> ${escapeHtml(best.name)} — ${best.v}%</p>
-<p>🔧 <b>نیازمند توجه بیشتر:</b> ${escapeHtml(weak.name)} — ${weak.v}%</p>`;
-}
-
-function avgField(f){
-let arr=[];
-for(let i=0;i<7;i++){
-let d=new Date();
-d.setDate(d.getDate()-i);
-arr.push(val(f,d));
-}
-return Math.round(arr.reduce((a,b)=>a+b,0)/arr.length);
+document.getElementById("insights").innerHTML=
+`<p>💪 بالاترین عملکرد: <b>${esc(a[0].name)}</b> — ${a[0].v}%</p>
+<p>🔧 نیازمند توجه بیشتر: <b>${esc(a[a.length-1].name)}</b> — ${a[a.length-1].v}%</p>`;
 }
 
 function streak(){
 let n=0;
+
 for(let i=0;i<365;i++){
 let d=new Date();
 d.setDate(d.getDate()-i);
+
 if(score(d)>=100)n++;
 else break;
 }
+
 return n;
-}
-
-function render(){
-applyTheme();
-
-document.getElementById("dateTitle").textContent=faDate(current);
-document.getElementById("gregDate").textContent=current.toLocaleDateString("fa-IR");
-
-let s=score();
-document.getElementById("todayScore").textContent=s+"%";
-document.getElementById("todayDone").textContent=s+"%";
-document.getElementById("progress").style.width=s+"%";
-document.getElementById("streak").textContent=streak()+" روز";
-document.getElementById("fieldCount").textContent=S.fields.length;
-
-document.getElementById("weekAvg").textContent=avg(7,0)+"%";
-document.getElementById("prevWeek").textContent=avg(7,7)+"%";
-document.getElementById("monthAvg").textContent=avg(30,0)+"%";
-document.getElementById("prevMonth").textContent=avg(30,30)+"%";
-
-renderActivities();
-renderSettings();
-renderChart();
-renderInsights();
 }
 
 function toggleTheme(){
@@ -424,28 +430,63 @@ a.click();
 function restore(e){
 let file=e.target.files[0];
 if(!file)return;
+
 let r=new FileReader();
-r.onload=()=>{
+
+r.onload=function(){
 try{
 let x=JSON.parse(r.result);
+
 if(x.fields&&x.days){
 S=x;
 S.fields.forEach(f=>{if(!f.type)f.type="score"});
 save();
 render();
 alert("اطلاعات با موفقیت وارد شد ✅");
-}else alert("فایل معتبر نیست");
-}catch(err){alert("فایل معتبر نیست");}
+}else{
+alert("فایل معتبر نیست");
+}
+}catch(err){
+alert("فایل معتبر نیست");
+}
 };
+
 r.readAsText(file);
 }
 
-function escapeHtml(x){
-return String(x).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+function esc(x){
+return String(x).replace(/[&<>"']/g,m=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[m]));
 }
 
-function escapeAttr(x){
-return escapeHtml(x);
+function render(){
+applyTheme();
+
+document.getElementById("dateTitle").textContent=faDate(current);
+document.getElementById("gregDate").textContent=current.toLocaleDateString("fa-IR");
+
+let s=score();
+
+document.getElementById("todayScore").textContent=s+"%";
+document.getElementById("todayDone").textContent=s+"%";
+document.getElementById("progress").style.width=s+"%";
+document.getElementById("streak").textContent=streak()+" روز";
+document.getElementById("fieldCount").textContent=S.fields.length;
+
+document.getElementById("weekAvg").textContent=avg(7,0)+"%";
+document.getElementById("prevWeek").textContent=avg(7,7)+"%";
+document.getElementById("monthAvg").textContent=avg(30,0)+"%";
+document.getElementById("prevMonth").textContent=avg(30,30)+"%";
+
+renderActivities();
+renderSettings();
+renderChart();
+renderInsights();
 }
 
 render();
